@@ -61,10 +61,6 @@ function App(): JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  const client = new Paho.MQTT.Client('broker.hivemq.com', 8000, 'uname');
-  client.onMessageArrived = onMessageArrived;
-  client.onConnectionLost = onConnectionLost;
-
   init({
     size: 10000,
     storageBackend: AsyncStorage,
@@ -73,6 +69,11 @@ function App(): JSX.Element {
     reconnect: true,
     sync : {}
   });
+
+  const client = new Paho.MQTT.Client('broker.hivemq.com', 8000, 'uname');
+  client.onMessageArrived = onMessageArrived;
+  client.onConnectionLost = onConnectionLost;
+
 
   useEffect(() => {
     console.log('useEffect');
@@ -83,7 +84,7 @@ function App(): JSX.Element {
 
   function onConnect() {
     console.log("onConnect");
-    client.subscribe('testtopic/1');
+    client.subscribe('testtopic/155911');
   }
   
   function onConnectionLost(responseObject) {
@@ -124,7 +125,7 @@ function App(): JSX.Element {
             screen and then come back to see your edits.
           </Section>
           <Section title='Send Message'>
-            <Button title='Send Data' onPress={() => publishMessage('Hello World','testtopic/1')}/>
+            <Button title='Send Data' onPress={() => publishMessage('Hello World','testtopic/155911')}/>
           </Section>
 
           <Section title='Receive Message'>
