@@ -4,7 +4,6 @@
  *
  * @format
  */
-
 import React, { useEffect, useState } from 'react';
 import init from 'react_native_mqtt';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -29,6 +28,7 @@ type SectionProps = PropsWithChildren<{
 
 function Section({children, title}: SectionProps): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  
   return (
     <View style={styles.sectionContainer}>
       <Text
@@ -40,15 +40,7 @@ function Section({children, title}: SectionProps): JSX.Element {
         ]}>
         {title}
       </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+      {children}
     </View>
   );
 }
@@ -74,13 +66,10 @@ function App(): JSX.Element {
   client.onMessageArrived = onMessageArrived;
   client.onConnectionLost = onConnectionLost;
 
-
   useEffect(() => {
     console.log('useEffect');
     client.connect({ onSuccess:onConnect, useSSL: false });
   }, []);
-  
-
 
   function onConnect() {
     console.log("onConnect");
@@ -94,9 +83,9 @@ function App(): JSX.Element {
   }
   
   function onMessageArrived(message) {
-    var x = "\nTopic : "+message.topic+"\nMessage : "+message.payloadString;
-    setMessage(x);
-    console.log(x);
+    var mqttMessage = message.payloadString;
+    setMessage(mqttMessage);
+    console.log(mqttMessage);
   }
 
   function publishMessage(message: string,destination: string) {
@@ -104,8 +93,6 @@ function App(): JSX.Element {
     message.destinationName = destination;
     client.send(message);
   }
-  
-
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -120,19 +107,21 @@ function App(): JSX.Element {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title='Send Message'>
-            <Button title='Send Data' onPress={() => publishMessage('Hello World','testtopic/155911')}/>
-          </Section>
-
-          <Section title='Receive Message'>
+          <Section title='FARM DATAS'>
             <Text style={styles.highlight}>{message}</Text>
-
           </Section>
 
+          <Section title='CONTROL YOUR FARM'>
+            <View style={styles.buttonContainer}>
+              <Button title='START IRRIGATION' onPress={() => publishMessage('OPEN','testtopic/155912')}/>
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button title='STOP IRRIGATION' onPress={() => publishMessage('CLOSE','testtopic/155912')}/>
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button title='SPECIAL IRRIGATION' onPress={() => publishMessage('SPECIAL','testtopic/155912')}/>
+            </View>
+          </Section>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -155,6 +144,9 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
+  },
+  buttonContainer: {
+    marginTop: 10,
   },
 });
 
